@@ -13,14 +13,5 @@ public class BootUp extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		c = context;
-		
-		Thread t = new Thread(new Runnable() {
-		    @Override
-		    public void run() {
-				SmackAndroid.init(c);
-		    }
-		});
-
-		t.start();
 	}
 }
