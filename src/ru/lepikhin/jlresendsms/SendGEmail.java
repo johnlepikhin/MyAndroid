@@ -1,6 +1,6 @@
 package ru.lepikhin.jlresendsms;
 
-import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
@@ -14,20 +14,33 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-public class SendGEmail {
+public class SendGEmail implements Retriable {
+	String email, subject, messageBody;
 
     public void sendMail(String email, String subject, String messageBody) {
+    	Log.i("zzz sendMail", "1");
+    	this.email = email;
+    	this.subject = subject;
+    	this.messageBody = messageBody;
+    	Log.i("zzz sendMail", "2");
+		Static.Add(this);
+    }
+    
+    public void retry () {
         Session session = createSessionObject();
 
         try {
             Message message = createMessage(email, subject, messageBody, session);
-            new SendMailTask().execute(message);
+        	Log.i("zzz SendGEmail", "send email to " + email + ", subject=" + subject);
+            Transport.send(message);
+        	Log.i("zzz SendGEmail", "OK, sent email to " + email + ", subject=" + subject);
         } catch (AddressException e) {
-            e.printStackTrace();
-        } catch (MessagingException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+			Log.e("zzz SendGEmail", "GOT EXCEPTION");
+			Static.Add(this);
         }
     }
 
@@ -52,27 +65,5 @@ public class SendGEmail {
                 return new PasswordAuthentication(AuthData.gmail_username, AuthData.gmail_password);
             }
         });
-    }
-
-    private class SendMailTask extends AsyncTask<Message, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
-
-        @Override
-        protected Void doInBackground(Message... messages) {
-            try {
-                Transport.send(messages[0]);
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
     }
 }

@@ -11,7 +11,7 @@ public class PhoneListener extends PhoneStateListener {
 	public void onCallStateChanged (int state, String number) {
 		if (TelephonyManager.CALL_STATE_RINGING == state) {
 			String contactName = new FindContactByNumber().findContactByNumber(context, number);
-			new XMPPSend("()", "Incoming call from " + number + " (" + contactName + ")");
+			new XMPPSend("Incoming call from " + number + " (" + contactName + ")", number);
 		}
 	}
 }

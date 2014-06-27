@@ -46,23 +46,32 @@ public class IncomingSms extends BroadcastReceiver {
 							.getDisplayOriginatingAddress();
 					message = currentMessage.getDisplayMessageBody();
 
-					Log.i("SmsReceiver", "senderNum: " + senderNum
+					Log.i("zzz SmsReceiver", "senderNum: " + senderNum
 							+ "; message: " + message);
 					
 					contactName = new FindContactByNumber().findContactByNumber(context, senderNum);
 					
+					Log.i ("zzz SmsReceiver", "1");
+					
 					// send mail
 					SendGEmail mailSender = new SendGEmail();
+					Log.i ("zzz SmsReceiver", "2, mailSender=" + mailSender);
 					mailSender.sendMail(Config.send_mail_to, "SMS from " + senderNum + " (" + contactName + ")", message);
+					Log.i ("zzz SmsReceiver", "3");
 					
 					// send sms
 					if (Arrays.asList(Config.send_sms_from).contains(senderNum)) {
+						Log.i ("zzz SmsReceiver", "4");
 						SendSMS smsSender = new SendSMS();
+						Log.i ("zzz SmsReceiver", "5");
 						smsSender.sendLongSMS(Config.send_sms_to, "SMS from " + senderNum + "\n\n" + message);
 					}
 					
+					Log.i ("zzz SmsReceiver", "6");
 					// send XMPP
-					new XMPPSend(senderNum, "SMS from " + senderNum + " (" + contactName + ")" + "\n\n" + message);
+					new XMPPSend("SMS from " + senderNum + " (" + contactName + ")" + "\n\n" + message, senderNum);
+					
+					Static.ProcessQueue ();
 				} // end for loop
 			} // bundle is null
 
