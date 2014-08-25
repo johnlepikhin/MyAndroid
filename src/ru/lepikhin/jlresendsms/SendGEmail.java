@@ -1,5 +1,6 @@
 package ru.lepikhin.jlresendsms;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
@@ -15,32 +16,28 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class SendGEmail implements Retriable {
-	String email, subject, messageBody;
 
-    public void sendMail(String email, String subject, String messageBody) {
-    	Log.i("zzz sendMail", "1");
-    	this.email = email;
-    	this.subject = subject;
-    	this.messageBody = messageBody;
-    	Log.i("zzz sendMail", "2");
-		Static.Add(this);
-    }
+	public int type () {
+		return 1;
+	}
     
-    public void retry () {
+    public void send(Context context, int id, String rcpt, String data) {
         Session session = createSessionObject();
 
         try {
-            Message message = createMessage(email, subject, messageBody, session);
-        	Log.i("zzz SendGEmail", "send email to " + email + ", subject=" + subject);
+            Message message = createMessage(rcpt, "...", data, session);
+        	Log.i("zzz SendGEmail", "send email to " + rcpt);
             Transport.send(message);
-        	Log.i("zzz SendGEmail", "OK, sent email to " + email + ", subject=" + subject);
+        	Log.i("zzz SendGEmail", "OK, sent email to " + rcpt);
+        	Static q = new Static (context);
+        	q.Remove(id);
+        	// TODO
         } catch (AddressException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (Exception e) {
 			Log.e("zzz SendGEmail", "GOT EXCEPTION");
-			Static.Add(this);
         }
     }
 

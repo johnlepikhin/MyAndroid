@@ -9,15 +9,21 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
 public class XMPPSend implements Retriable {
-	private String message;
-	private String smsSenderPhone;
+	private static Context context;
+
+	public int type () {
+		return 3;
+	}
 	
-	public void retry () {
+    public void send(Context context, int id, final String rcpt, String data) {
 		XMPPConnection.DEBUG_ENABLED = true;
+		XMPPSend.context = context;
+		Static q = new Static (context);
 		
 		ConnectionConfiguration config = new ConnectionConfiguration(AuthData.xmpp_server, 5222);
 		config.setCompressionEnabled(true);
@@ -51,10 +57,19 @@ public class XMPPSend implements Retriable {
 					@Override
 				    public void processMessage(Chat chat, Message message) {
 						Log.i("zzz XMPPSend", "got incoming message, processMessage 1");
-						SendSMS smsSender = new SendSMS();
+//						SendSMS smsSender = new SendSMS();
 						Log.i("zzz XMPPSend", "got incoming message, processMessage 2");
-						smsSender.sendLongSMS(smsSenderPhone, message.getBody());
-						Static.ProcessQueue();
+//						smsSender.send(0, rcpt, message.getBody());
+						
+						// TODO (???)
+						Static q = new Static (XMPPSend.context);
+//						q.Add(2, XMPPSend.sender, message.getBody());
+						try {
+							q.ProcessQueue();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 				    }
 				});
 			} catch (IllegalStateException e) {
@@ -64,25 +79,18 @@ public class XMPPSend implements Retriable {
 			if (null != XMPPStatic.chat) {
 //				Log.i("zzz XMPPSend", "send message (sleep): " + message);
 //				Thread.sleep(15000);
-				Log.i("zzz XMPPSend", "send message: " + message);
+				Log.i("zzz XMPPSend", "send message: " + data);
 				try {
-					XMPPStatic.chat.sendMessage(message);
+					XMPPStatic.chat.sendMessage(data);
+		        	q.Remove(id);
 				} catch (XMPPException e) {
 					Log.e("zzz XMPPSend", "GOT EXCEPTION in sendMessage");
 					e.printStackTrace();
-					Static.Add(XMPPSend.this);
 				}
 			}
 		} catch (Exception e) {
 			Log.e("zzz XMPPSend", "GOT EXCEPTION");
 			e.printStackTrace();
-			Static.Add(this);
 		}
-	}
-	
-	public XMPPSend (String msg, String smsSenderPhone) {
-		this.message = msg;
-		this.smsSenderPhone = smsSenderPhone;
-		Static.Add(this);
-	}
+	}	
 }

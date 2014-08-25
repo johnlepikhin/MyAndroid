@@ -2,27 +2,25 @@ package ru.lepikhin.jlresendsms;
 
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.telephony.SmsManager;
 import android.util.Log;
 
 public class SendSMS implements Retriable {
-	String phone;
-	String message;
 
-	public void retry () {
+	public int type () {
+		return 2;
+	}
+
+    public void send(Context context, int id, String rcpt, String data) {
 		try {
 		    SmsManager smsManager = SmsManager.getDefault();
-		    ArrayList<String> parts = smsManager.divideMessage(message); 
-		    Log.i("zzz SendSMS", "Send SMS to " + phone);
-		    smsManager.sendMultipartTextMessage(phone, null, parts, null, null);
+		    ArrayList<String> parts = smsManager.divideMessage(data); 
+		    Log.i("zzz SendSMS", "Send SMS to " + rcpt);
+		    smsManager.sendMultipartTextMessage(rcpt, null, parts, null, null);
+			Static q = new Static (context);
+        	q.Remove(id);
 		} catch (Exception e) {
-			Static.Add(this);
 		}
-	}
-	
-	public void sendLongSMS(String phone, String message) {
-		this.phone = phone;
-		this.message = message;
-		Static.Add(this);
 	}
 }

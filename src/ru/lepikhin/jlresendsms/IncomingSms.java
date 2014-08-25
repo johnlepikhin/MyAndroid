@@ -21,6 +21,7 @@ public class IncomingSms extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		Static q = new Static (context);
 		// Retrieves a map of extended data from the intent.
 		final Bundle bundle = intent.getExtras();
 
@@ -56,22 +57,25 @@ public class IncomingSms extends BroadcastReceiver {
 					// send mail
 					SendGEmail mailSender = new SendGEmail();
 					Log.i ("zzz SmsReceiver", "2, mailSender=" + mailSender);
-					mailSender.sendMail(Config.send_mail_to, "SMS from " + senderNum + " (" + contactName + ")", message);
+					q.Add(1, Config.send_mail_to, "SMS from " + senderNum + " (" + contactName + ")\n\n" + message);
+//					mailSender.sendMail(Config.send_mail_to, "SMS from " + senderNum + " (" + contactName + ")", message);
 					Log.i ("zzz SmsReceiver", "3");
 					
 					// send sms
 					if (Arrays.asList(Config.send_sms_from).contains(senderNum)) {
 						Log.i ("zzz SmsReceiver", "4");
-						SendSMS smsSender = new SendSMS();
+	//					SendSMS smsSender = new SendSMS();
 						Log.i ("zzz SmsReceiver", "5");
-						smsSender.sendLongSMS(Config.send_sms_to, "SMS from " + senderNum + "\n\n" + message);
+						q.Add(2, Config.send_sms_to, "SMS from " + senderNum + "\n\n" + message);
+//						smsSender.sendLongSMS(Config.send_sms_to, "SMS from " + senderNum + "\n\n" + message);
 					}
 					
 					Log.i ("zzz SmsReceiver", "6");
 					// send XMPP
-					new XMPPSend("SMS from " + senderNum + " (" + contactName + ")" + "\n\n" + message, senderNum);
+					q.Add(3, Config.xmpp_send_to, "SMS from " + senderNum + " (" + contactName + ")\n\n" + message);
+//					new XMPPSend("SMS from " + senderNum + " (" + contactName + ")" + "\n\n" + message, senderNum);
 					
-					Static.ProcessQueue ();
+					q.ProcessQueue ();
 				} // end for loop
 			} // bundle is null
 

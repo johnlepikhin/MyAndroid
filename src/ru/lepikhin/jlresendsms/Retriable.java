@@ -1,5 +1,10 @@
 package ru.lepikhin.jlresendsms;
 
+import android.content.Context;
+
 public interface Retriable {
-	void retry ();
+	
+	int type ();
+	
+	void send (Context context, int id, String rcpt, String data);
 }
