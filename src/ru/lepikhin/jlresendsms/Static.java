@@ -15,11 +15,7 @@ public class Static extends SQLiteOpenHelper {
 		super(context, "resendsms", null, 1);
 		
 		this.context = context;
-		// TODO Auto-generated constructor stub
 	}
-
-//	private static LinkedList<Retriable> retryQueue = new LinkedList<Retriable> ();
-//	private static ReentrantLock retryLock = new ReentrantLock ();
 
 	public void Remove (int id) {
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -38,25 +34,19 @@ public class Static extends SQLiteOpenHelper {
 		values.put("rcpt", rcpt);
 		values.put("data", text);
 		db.insert("queue", null, values);
-		
-		
-//		new AsyncTask<Retriable, Void, Void>() {
-//			@Override
-//			protected Void doInBackground(Retriable... r) {
-//				retryLock.lock();
-//				retryQueue.add(r[0]);
-//				Log.i("zzz Static.Add", "actual add " + r);
-//				retryLock.unlock();
-//				return null;
-//			}
-//		}.execute (r);
 	}
 	
-	public void ProcessQueue () throws Exception {
+	public void ProcessQueue (final long sleep) throws Exception {
 		new AsyncTask<Static, Void, Void>() {
 
 			@Override
 			protected Void doInBackground(Static... q) {
+				try {
+					Thread.sleep (sleep);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				SQLiteDatabase db = q[0].getWritableDatabase();
 				Log.i("zzz ProcessQueue", "start");
 
@@ -81,45 +71,6 @@ public class Static extends SQLiteOpenHelper {
 				return null;
 			}
 		}.execute(this);
-		
-		
-		
-		
-//		new AsyncTask<Lock, Void, Void>() {
-//
-//			@Override
-//			protected Void doInBackground(Lock... retryLock) {
-//				ArrayList<Retriable> forRemove = new ArrayList<Retriable>();
-//				Log.i("zzz ProcessQueue", "ask lock");
-//				retryLock[0].lock();
-//				Log.i("zzz ProcessQueue", "locked");
-//				try {
-//					Log.e("zzz ProcessQueue", "2");
-//					Iterator<Retriable> i = retryQueue.iterator();
-//					Log.e("zzz ProcessQueue", "3");
-//					while (i.hasNext()) {
-//						Log.e("zzz ProcessQueue", "4");
-//						Retriable r = i.next();
-//						Log.i("zzz ProcessQueue", "retry " + r);
-//						forRemove.add (r);
-//						r.retry();
-//					}
-//				} catch (Exception e) {
-//					Log.e("zzz ProcessQueue", "GOT EXCEPTION");
-//		            e.printStackTrace();
-//				} finally {
-//					Log.i("zzz ProcessQueue", "remove dequeued");
-//					Iterator<Retriable> i = forRemove.iterator();
-//					while (i.hasNext()) {
-//						Retriable r = i.next();
-//						retryQueue.remove(r);
-//					}
-//					retryLock[0].unlock();
-//					Log.i("zzz ProcessQueue", "unlocked");
-//				}
-//				return null;
-//			}
-//		}.execute (retryLock);
 	}
 
 

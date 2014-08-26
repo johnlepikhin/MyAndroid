@@ -16,7 +16,7 @@ public class PhoneListener extends PhoneStateListener {
 //			new XMPPSend("Incoming call from " + number + " (" + contactName + ")", number);
 
 			try {
-				q.ProcessQueue();
+				q.ProcessQueue(1000);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

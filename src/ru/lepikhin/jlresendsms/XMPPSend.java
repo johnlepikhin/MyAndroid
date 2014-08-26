@@ -65,7 +65,7 @@ public class XMPPSend implements Retriable {
 						Static q = new Static (XMPPSend.context);
 //						q.Add(2, XMPPSend.sender, message.getBody());
 						try {
-							q.ProcessQueue();
+							q.ProcessQueue(1000);
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -85,7 +85,12 @@ public class XMPPSend implements Retriable {
 		        	q.Remove(id);
 				} catch (XMPPException e) {
 					Log.e("zzz XMPPSend", "GOT EXCEPTION in sendMessage");
-					e.printStackTrace();
+		        	try {
+						q.ProcessQueue(15*60*1000);
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		} catch (Exception e) {

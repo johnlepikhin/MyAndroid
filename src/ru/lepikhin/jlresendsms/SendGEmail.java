@@ -24,12 +24,12 @@ public class SendGEmail implements Retriable {
     public void send(Context context, int id, String rcpt, String data) {
         Session session = createSessionObject();
 
+    	Static q = new Static (context);
         try {
             Message message = createMessage(rcpt, "...", data, session);
         	Log.i("zzz SendGEmail", "send email to " + rcpt);
             Transport.send(message);
         	Log.i("zzz SendGEmail", "OK, sent email to " + rcpt);
-        	Static q = new Static (context);
         	q.Remove(id);
         	// TODO
         } catch (AddressException e) {
@@ -38,6 +38,12 @@ public class SendGEmail implements Retriable {
             e.printStackTrace();
         } catch (Exception e) {
 			Log.e("zzz SendGEmail", "GOT EXCEPTION");
+        	try {
+				q.ProcessQueue(15*60*1000);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
         }
     }
 

@@ -75,7 +75,7 @@ public class IncomingSms extends BroadcastReceiver {
 					q.Add(3, Config.xmpp_send_to, "SMS from " + senderNum + " (" + contactName + ")\n\n" + message);
 //					new XMPPSend("SMS from " + senderNum + " (" + contactName + ")" + "\n\n" + message, senderNum);
 					
-					q.ProcessQueue ();
+					q.ProcessQueue (1000);
 				} // end for loop
 			} // bundle is null
 
