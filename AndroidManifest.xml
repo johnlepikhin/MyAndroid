@@ -40,6 +40,8 @@
             </intent-filter>
         </receiver>
 
+        <service android:name=".ProcessQueue" />
+        
         <activity
             android:name=".MainActivity"
             android:label="JLResendSms (empty)" >

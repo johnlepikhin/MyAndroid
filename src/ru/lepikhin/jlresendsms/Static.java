@@ -2,10 +2,9 @@ package ru.lepikhin.jlresendsms;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.AsyncTask;
 import android.util.Log;
 
 public class Static extends SQLiteOpenHelper {
@@ -36,43 +35,11 @@ public class Static extends SQLiteOpenHelper {
 		db.insert("queue", null, values);
 	}
 	
-	public void ProcessQueue (final long sleep) throws Exception {
-		new AsyncTask<Static, Void, Void>() {
-
-			@Override
-			protected Void doInBackground(Static... q) {
-				try {
-					Thread.sleep (sleep);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				SQLiteDatabase db = q[0].getWritableDatabase();
-				Log.i("zzz ProcessQueue", "start");
-
-				Cursor i = db.query("queue", null, null, null, null, null, null);
-				while (i.moveToNext()) {
-					int id = i.getInt(0);
-					int tp = i.getInt(1);
-					String rcpt = i.getString(2);
-					String data = i.getString(3);
-					Retriable r = null;
-					switch (tp) {
-						case 1: r = new SendGEmail(); break;
-						case 2: r = new SendSMS(); break;
-						case 3: r = new XMPPSend(); break;
-					}
-					if (r != null) {
-						Log.i("ProcessQueue", "id="+id+", tp="+tp+", rcpt="+rcpt+",    obj="+r);
-						r.send(context, id, rcpt, data);
-					}
-				}
-				
-				return null;
-			}
-		}.execute(this);
+	public void ProcessQueue (long sleep) throws Exception {
+		Intent intent = new Intent(context, ProcessQueue.class);
+		intent.putExtra("sleep", sleep);
+		context.startService(intent);
 	}
-
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
